@@ -23,19 +23,19 @@ namespace MoneyAdministratorBackend.Services
             _signInManager = signInManager;
         }
 
-        public async Task<string> Register(string Username, string password)
+        public async Task<string> Register(string username, string password)
         {
             var user = new User 
             { 
-                UserName = Username, 
-                Email = Username 
+                UserName = username, 
+                Email = username 
             };
 
             var result = await _userManager.CreateAsync(user, password);
 
             if (result.Succeeded)
             {
-                return GenerateJwtToken(user);
+                return await Login(username, password);
             }
 
             string errors = "";
@@ -61,11 +61,16 @@ namespace MoneyAdministratorBackend.Services
                 throw new Exception("Error en las credenciales.");
         }
 
+        public async Task Logout()
+        {
+            await _signInManager.SignOutAsync();
+        }
+
         private string GenerateJwtToken(User user)
         {
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sid, user.Id),
+                new Claim(JwtRegisteredClaimNames.NameId, user.Id),
                 new Claim(JwtRegisteredClaimNames.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };

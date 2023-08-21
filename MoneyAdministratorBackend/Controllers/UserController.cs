@@ -18,6 +18,22 @@ namespace MoneyAdministratorBackend.Controllers
             _userService = userService;
         }
 
+        [HttpGet("session_check")]
+        [Authorize]  // Asegúrate de que el usuario esté autenticado
+        public IActionResult CheckIsLogin()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Obtiene el ID del usuario
+            var userName = User.FindFirstValue(ClaimTypes.Name); // Obtiene el nombre de usuario
+
+            var response = new UserResponseDto
+            {
+                Id = userId,
+                Username = userName
+            };
+
+            return Ok(response);
+        }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserAuthDto userDto)
         {
@@ -36,7 +52,7 @@ namespace MoneyAdministratorBackend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { ex.Message });
             }
         }
 
@@ -62,20 +78,11 @@ namespace MoneyAdministratorBackend.Controllers
             }
         }
 
-        [HttpGet("login_session_check")]
-        [Authorize]  // Asegúrate de que el usuario esté autenticado
-        public IActionResult CheckIsLogin()
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
         {
-            var userId = User.FindFirstValue(ClaimTypes.Sid); // Obtiene el ID del usuario
-            var userName = User.FindFirstValue(ClaimTypes.Name); // Obtiene el nombre de usuario
-
-            var response = new UserResponseDto
-            {
-                Id = userId,
-                Username = userName
-            };
-
-            return Ok(response);
+            await _userService.Logout();
+            return Ok(new { Message = "Sesión cerrada" });
         }
     }
 }

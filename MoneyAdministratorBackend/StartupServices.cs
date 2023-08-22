@@ -10,6 +10,8 @@ using MoneyAdministratorBackend.Services;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using MoneyAdministratorBackend.Utilities;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace MoneyAdministratorBackend
 {
@@ -39,6 +41,7 @@ namespace MoneyAdministratorBackend
             });
 
             // Autenticacion con JWT mediante cookies
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); //Elimino la convercion de claims para usar mis custom claims
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -55,21 +58,20 @@ namespace MoneyAdministratorBackend
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings["Key"])),
                     ValidateIssuer = true,
-                    ValidIssuer = jwtSettings["Issuer"],
                     ValidateAudience = true,
-                    ValidAudience = jwtSettings["Audience"],
                     ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings["Issuer"],
+                    ValidAudience = jwtSettings["Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings["Key"])),
                     ClockSkew = TimeSpan.FromMinutes(5),
-                    NameClaimType = ClaimTypes.Name,
                 };
                 options.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = context =>
                     {
-                        context.Token = context.Request.Cookies["YourCookieName"];
+                        context.Token = context.Request.Cookies["token"];
                         return Task.CompletedTask;
                     }
                 };

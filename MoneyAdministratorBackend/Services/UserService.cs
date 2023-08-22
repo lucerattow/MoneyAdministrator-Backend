@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using MoneyAdministratorBackend.Data;
 using MoneyAdministratorBackend.Dtos;
 using MoneyAdministratorBackend.Models;
+using MoneyAdministratorBackend.Utilities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -23,12 +24,28 @@ namespace MoneyAdministratorBackend.Services
             _signInManager = signInManager;
         }
 
-        public async Task<string> Register(string username, string password)
+        public async Task<UserResponseDto> GetUserDetailsById(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+                return null;
+
+            return new UserResponseDto()
+            {
+                Id = user.Id,
+                Username = user.UserName,
+                DisplayName = user.DisplayName,
+            };
+        }
+
+        public async Task<string> Register(string username, string password, string displayname)
         {
             var user = new User 
             { 
                 UserName = username, 
-                Email = username 
+                Email = username,
+                DisplayName = displayname
             };
 
             var result = await _userManager.CreateAsync(user, password);
@@ -70,20 +87,19 @@ namespace MoneyAdministratorBackend.Services
         {
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.NameId, user.Id),
-                new Claim(JwtRegisteredClaimNames.Name, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.Now.AddDays(Convert.ToDouble(_configuration["JwtSettings:ExpireDays"]));
+            //var expires = DateTime.Now.AddDays(Convert.ToDouble(_configuration["JwtSettings:ExpireDays"]));
 
             var token = new JwtSecurityToken(
                 _configuration["JwtSettings:Issuer"],
-                _configuration["JwtSettings:Issuer"],
+                _configuration["JwtSettings:Audience"],
                 claims,
-                expires: expires,
+                //expires: expires,
                 signingCredentials: creds
             );
 

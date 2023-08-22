@@ -6,6 +6,8 @@ namespace MoneyAdministratorBackend.Models
 {
     public class User : IdentityUser
     {
+        public string DisplayName { get; set; }
+
         //foreign keys all constraints
         public IEnumerable<CreditCard> CreditCards { get; set; }
 

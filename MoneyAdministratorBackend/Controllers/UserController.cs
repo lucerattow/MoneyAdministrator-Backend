@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MoneyAdministratorBackend.Dtos;
 using MoneyAdministratorBackend.Services;
+using MoneyAdministratorBackend.Utilities;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace MoneyAdministratorBackend.Controllers
@@ -20,18 +22,12 @@ namespace MoneyAdministratorBackend.Controllers
 
         [HttpGet("session_check")]
         [Authorize]  // Asegúrate de que el usuario esté autenticado
-        public IActionResult CheckIsLogin()
+        public async Task<IActionResult> CheckIsLogin()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Obtiene el ID del usuario
-            var userName = User.FindFirstValue(ClaimTypes.Name); // Obtiene el nombre de usuario
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userService.GetUserDetailsById(userId);
 
-            var response = new UserResponseDto
-            {
-                Id = userId,
-                Username = userName
-            };
-
-            return Ok(response);
+            return Ok(user);
         }
 
         [HttpPost("register")]
@@ -39,7 +35,7 @@ namespace MoneyAdministratorBackend.Controllers
         {
             try
             {
-                var token = await _userService.Register(userDto.Username, userDto.Password);
+                var token = await _userService.Register(userDto.Username, userDto.Password, userDto.DisplayName);
                 var cookieOptions = new CookieOptions
                 {
                     HttpOnly = true,

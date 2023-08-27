@@ -12,7 +12,7 @@ namespace MoneyAdministratorBackend.Models.Validators
             RuleFor(model => model.EntityId)
                 .NotEmpty().WithMessage("El banco emisor es obligatorio");
 
-            RuleFor(model => model.CreditCardBrandId)
+            RuleFor(model => model.Brand)
                 .NotEmpty().WithMessage("La marca del banco emisor es obligatoria");
 
             RuleFor(model => model.LastFourNumbers)

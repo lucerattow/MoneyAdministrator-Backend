@@ -30,12 +30,12 @@ namespace MoneyAdministratorBackend
             // Permito recibir solicitudes desde el mismo servidor
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowLocalhost3000",
+                options.AddPolicy("LocalhostAndNgrok",
                     builder =>
                     {
                         builder.WithOrigins("https://localhost:3000")
-                            .AllowAnyHeader()
                             .AllowAnyMethod()
+                            .AllowAnyHeader()
                             .AllowCredentials();
                     });
             });

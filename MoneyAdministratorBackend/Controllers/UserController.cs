@@ -40,7 +40,7 @@ namespace MoneyAdministratorBackend.Controllers
                 {
                     HttpOnly = true,
                     Secure = true,  // usar solo en HTTPS
-                    SameSite = SameSiteMode.Strict  // previene el envío de la cookie en solicitudes cross-site
+                    SameSite = SameSiteMode.None  // previene el envío de la cookie en solicitudes cross-site
                 };
                 Response.Cookies.Append("token", token, cookieOptions);
 
@@ -62,7 +62,7 @@ namespace MoneyAdministratorBackend.Controllers
                 {
                     HttpOnly = true,
                     Secure = true,  // usar solo en HTTPS
-                    SameSite = SameSiteMode.Strict  // previene el envío de la cookie en solicitudes cross-site
+                    SameSite = SameSiteMode.None  // previene el envío de la cookie en solicitudes cross-site
                 };
                 Response.Cookies.Append("token", token, cookieOptions);
 

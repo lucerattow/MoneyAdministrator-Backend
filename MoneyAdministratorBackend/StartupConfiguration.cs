@@ -11,8 +11,8 @@
                 app.UseSwaggerUI();
             }
 
-            app.UseCors("AllowLocalhost3000");
             app.UseHttpsRedirection();
+            app.UseCors("LocalhostAndNgrok");
             app.UseAuthentication(); //JWT
             app.UseAuthorization();
             app.MapControllers();

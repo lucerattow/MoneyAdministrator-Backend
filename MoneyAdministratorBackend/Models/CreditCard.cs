@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using MoneyAdministratorBackend.Enums;
 
 namespace MoneyAdministratorBackend.Models
 {
@@ -11,7 +12,7 @@ namespace MoneyAdministratorBackend.Models
 
         public int EntityId { get; set; }
 
-        public int CreditCardBrandId { get; set; }
+        public CreditCardBrand Brand { get; set; }
 
         public string LastFourNumbers { get; set; }
 
@@ -22,8 +23,6 @@ namespace MoneyAdministratorBackend.Models
         public User User { get; set; }
 
         public Entity Entity { get; set; }
-
-        public CreditCardBrand CreditCardBrand { get; set; }
 
         //foreign keys all constraints
         public IEnumerable<CreditCardSummary> CreditCardSumaries { get; set; }
